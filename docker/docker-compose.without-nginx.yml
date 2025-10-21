@@ -1,0 +1,22 @@
+services:
+  mattermost:
+    ports:
+      - ${APP_PORT}:8065
+      - ${CALLS_PORT}:${CALLS_PORT}/udp
+      - ${CALLS_PORT}:${CALLS_PORT}/tcp
+
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=app-net
+      - traefik.http.routers.mattermost.rule=Host(`${DOMAIN:-localhost}`)
+      - traefik.http.routers.mattermost.entrypoints=web
+      - traefik.http.routers.mattermost.service=mattermost
+      - traefik.http.services.mattermost.loadbalancer.server.port=8065
+    networks:
+      - mattermost
+      - app-net
+
+networks:
+  app-net:
+    external: true
+    name: app-net
